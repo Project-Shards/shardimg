@@ -1,0 +1,15 @@
+{
+  "name": "System",
+  "version": "0.1.0",
+  "type": "system",
+  "base": "",
+  "author": "axtlos (axtlos@getcryst.al)",
+  "packages": [
+    "linux",
+    "base",
+    "base-devel"
+  ],
+  "commands": [
+    "echo hello"
+  ]
+}
