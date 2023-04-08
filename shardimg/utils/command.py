@@ -54,3 +54,19 @@ class Command:
                 sys.exit(out.returncode)
 
         return [out.returncode, out.stdout, out.stderr]
+
+    @staticmethod
+    def execute_chroot(
+            command: list,
+            command_description: str = "",
+            crash: bool = False,
+            root: str = "/mnt"
+    ) -> [str, str, str]:
+        chroot_command = ["arch-chroot", root]
+        chroot_command.extend(command)
+        return Command.execute_command(
+            command=chroot_command,
+            command_description=command_description,
+            crash=crash,
+            elevated=True
+        )

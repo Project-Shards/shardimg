@@ -38,7 +38,7 @@ def build_desktop_image(
     get_image_rootfs(
         build_dir=build_dir,
         container=randomword(10),
-        image="archlinux:latest", # TODO: Replace with crystal registry
+        image="docker.io/axtlos/projectshards:0.1.0", # TODO: Replace with crystal registry
         name="system"
     )
     create_desktop_overlay(
@@ -49,6 +49,13 @@ def build_desktop_image(
         root_dir=build_dir+"/root",
         packages=manifest.packages
     )
+    for command in manifest.commands:
+        Command.execute_chroot(
+            command=command.split(" "),
+            command_description="Run command " + command,
+            root=build_dir + "/root",
+            crash=True,
+        )
     DiskUtils.unmount(build_dir+"/root")
     generate_containerfile(
         manifest=manifest,
@@ -76,6 +83,7 @@ def build_desktop_image(
         crash=True,
         elevated=True
     )
+
 
 
 
@@ -171,5 +179,3 @@ def generate_containerfile(
     FileUtils.append_file(build_dir + "/Containerfile", "LABEL org.opencontainers.image.title=\""+manifest.name+"\"\n")
     FileUtils.append_file(build_dir + "/Containerfile", "LABEL org.opencontainers.image.version=\""+manifest.version+"\"\n")
     FileUtils.append_file(build_dir + "/Containerfile", "COPY desktop/ /\n")
-    for i in manifest.commands:
-        FileUtils.append_file(build_dir + "/Containerfile", "RUN "+i+"\n")
