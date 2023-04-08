@@ -1,13 +1,11 @@
 {
   "name": "System",
   "version": "0.1.0",
-  "type": "system",
+  "type": "desktop",
   "base": "",
   "author": "axtlos (axtlos@getcryst.al)",
   "packages": [
-    "linux",
-    "base",
-    "base-devel"
+    "gnome"
   ],
   "commands": [
     "echo hello"

@@ -18,6 +18,7 @@
 import click
 from shardimg.classes.manifest import Manifest
 from shardimg.functions.system import *
+from shardimg.functions.desktop import *
 
 @click.group()
 @click.option('--verbose', is_flag=True, help='Enables verbose mode.', default=False)
@@ -38,7 +39,10 @@ def build(manifest, build_dir, keep):
     print("Base "+manifest.base)
     print("Commands" +str(manifest.commands))
     print("Building")
-    build_system_image(manifest, build_dir)
+    if manifest.type == "system":
+        build_system_image(manifest, build_dir)
+    elif manifest.type == "desktop":
+        build_desktop_image(manifest, build_dir)
 
 import sys
 if __name__ == '__main__':

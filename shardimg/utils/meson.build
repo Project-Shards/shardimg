@@ -7,6 +7,7 @@ shardimg_sources = [
     'command.py',
     'files.py',
     'log.py',
+    'disks.py'
 ]
 
 install_data(shardimg_sources, install_dir: utilsdir)

@@ -35,23 +35,20 @@ class Command:
             if os.environ.get("SHARDS_FAKE"):
                 return [0, "", ""]
 
-        if elevated:
-            sudo = ["sudo"]
-            command.extend(sudo)
+        rootcommand = ["sudo"] + command
+        print(rootcommand)
+        print(command)
+        print(elevated)
         out = subprocess.run(
-            command,
+            rootcommand if elevated else command,
             #shell=True,
             cwd=workdir if workdir.strip() != "" else None
         )
         if out.returncode != 0 and command_description.strip() != "":
-            logger.error(out.stdout.decode("utf-8"))
-            logger.error(out.stderr.decode("utf-8"))
             logger.error(command_description+" failed with returncode "+str(out.returncode))
             if crash:
                 sys.exit(out.returncode)
         elif out.returncode != 0:
-            logger.error(out.stdout.decode("utf-8"))
-            logger.error(out.stderr.decode("utf-8"))
             logger.error(" ".join(command)+" failed with returncode "+str(out.returncode))
             if crash:
                 sys.exit(out.returncode)

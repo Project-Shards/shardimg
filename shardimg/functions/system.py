@@ -39,9 +39,6 @@ def build_system_image(
         workdir=build_dir,
         crash=True
     )
-    if out[0] != 0:
-        print("Error building image")
-        exit(1)
 
 def generate_containerfile(
         manifest: Manifest,
