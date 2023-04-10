@@ -179,3 +179,4 @@ def generate_containerfile(
     FileUtils.append_file(build_dir + "/Containerfile", "LABEL org.opencontainers.image.title=\""+manifest.name+"\"\n")
     FileUtils.append_file(build_dir + "/Containerfile", "LABEL org.opencontainers.image.version=\""+manifest.version+"\"\n")
     FileUtils.append_file(build_dir + "/Containerfile", "COPY desktop/ /\n")
+    FileUtils.append_file(build_dir + "/Containerfile", "ENTRYPOINT /\n")
