@@ -1,4 +1,4 @@
-# system.py
+# boot.py
 #
 # Copyright 2023 axtlos <axtlos@getcryst.al>
 #
@@ -19,17 +19,27 @@
 from shardimg.classes.manifest import Manifest
 from shardimg.utils.files import FileUtils
 from shardimg.utils.command import Command
-from shardimg.utils.shards import Shards
+from shardimg.utils.disks import DiskUtils
 from shardimg.utils.log import setup_logging
-setup_logging()
+from shardimg.utils.shards import Shards
+import random, string
+logger = setup_logging()
 
-def build_system_image(
+def build_boot_image(
         manifest: Manifest,
-        build_dir: str,
-        repo: str,
+        build_dir: str
 ):
     FileUtils.create_directory(build_dir)
     FileUtils.create_directory(build_dir+"/root")
     Shards.install_packages(manifest.packages, build_dir+"/root")
-    Shards.generate_flatpak_manifest(manifest, build_dir)
-    Shards.build_flatpak(manifest, build_dir, repo)
+
+def create_boot_overlay(build_dir: str, base: str):
+    FileUtils.create_directory(build_dir+"/workdir")
+    FileUtils.create_directory(build_dir+"/root")
+
+    DiskUtils.overlay_mount(
+        lowerdirs=[build_dir+"/system"],
+        upperdir=build_dir+"/desktop",
+        workdir=build_dir+"/workdir",
+        destination=build_dir+"/root"
+    )

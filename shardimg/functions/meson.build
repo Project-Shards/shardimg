@@ -3,7 +3,7 @@ functionsdir = join_paths(pkgdatadir, 'shardimg/functions')
 
 shardimg_sources = [
     '__init__.py',
-    'desktop.py',
+    'boot.py',
     'system.py',
 ]
 

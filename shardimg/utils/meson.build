@@ -3,7 +3,7 @@ utilsdir = join_paths(pkgdatadir, 'shardimg/utils')
 
 shardimg_sources = [
     '__init__.py',
-    'podman.py',
+    'shards.py',
     'command.py',
     'files.py',
     'log.py',

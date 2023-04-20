@@ -20,6 +20,7 @@ import json
 class Manifest:
 
     name: str
+    id: str
     version: str
     type: str
     base: str
@@ -36,6 +37,7 @@ class Manifest:
         with open(manifest) as f:
             data = json.load(f)
         self.name = data["name"]
+        self.id = data["id"]
         self.version = data["version"]
         self.type = data["type"]
         self.base = data["base"]

@@ -18,7 +18,9 @@
 import click
 from shardimg.classes.manifest import Manifest
 from shardimg.functions.system import *
-from shardimg.functions.desktop import *
+from shardimg.functions.boot import *
+from shardimg.utils.log import setup_logging
+logger = setup_logging()
 
 @click.group()
 @click.option('--verbose', is_flag=True, help='Enables verbose mode.', default=False)
@@ -29,20 +31,25 @@ def main(verbose):
 @main.command()
 @click.option('--manifest', help='Path to the manifest file.', default="manifest.json")
 @click.option('--build-dir', help='Path to the build directory.', default="build")
+@click.option('--repo', help='Path to the flatpak repository. Can be an empty directory.', default="repo")
 @click.option('--keep', is_flag=True, help='Keep the build directory after the build.', default=False)
-def build(manifest, build_dir, keep):
+def build(manifest, build_dir, keep, repo):
     manifest = Manifest(manifest)
     print("Name "+manifest.name)
+    print("ID "+manifest.id)
     print("Type "+manifest.type)
     print("Author "+manifest.author)
     print("Packages "+str(manifest.packages))
     print("Base "+manifest.base)
     print("Commands" +str(manifest.commands))
     print("Building")
+    if manifest.id.count(".") < 2:
+        logger.error("Invalid ID. Must contain at least 2 periods")
+        sys.exit(1)
     if manifest.type == "system":
-        build_system_image(manifest, build_dir)
-    elif manifest.type == "desktop":
-        build_desktop_image(manifest, build_dir)
+        build_system_image(manifest, build_dir, repo)
+    elif manifest.type == "boot":
+        build_boot_image(manifest, build_dir, repo)
 
 import sys
 if __name__ == '__main__':

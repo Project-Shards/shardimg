@@ -96,3 +96,20 @@ class FileUtils:
             command_description="Replacing "+search+" with "+replace+" in file "+path,
             crash=True,
         )
+
+    @staticmethod
+    def copy_file(
+        source: str,
+        destination: str,
+        crash: bool = False,
+    ):
+        logger.info(f"Copying file {source} to {destination}")
+        Command.execute_command(
+            command=[
+                "cp",
+                source,
+                destination,
+            ],
+            command_description="Copying file "+source+" to "+destination,
+            crash=False,
+        )
