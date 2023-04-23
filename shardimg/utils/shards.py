@@ -24,7 +24,7 @@ from shardimg.classes.manifest import Manifest
 
 class Shards:
     @staticmethod
-    def install_packages(packages, root):
+    def install_packages(packages: list, root: str):
         FileUtils.create_directory(root + "/var/lib/pacman")
         FileUtils.copy_file(source="/etc/pacman.conf", destination=root + "/pacman.conf", crash=True)
         Command.execute_command(
@@ -48,7 +48,22 @@ class Shards:
         )
 
     @staticmethod
-    def generate_flatpak_manifest(manifest, build_dir):
+    def execute_commands(commands: list, root):
+        for command in commands:
+            Command.execute_command(
+                command=[
+                    "fakechroot",
+                    "fakeroot",
+                    "chroot",
+                    root,
+                    command,
+                ],
+                command_description="Run command "+command+" in chroot",
+                crash=True
+            )
+
+    @staticmethod
+    def generate_flatpak_manifest(manifest: Manifest, build_dir: str):
         with open(build_dir + "/" + manifest.name + ".yml", "w") as f:
             yaml.dump({
                 "app-id": manifest.id,
@@ -78,7 +93,7 @@ class Shards:
             }, f)
 
     @staticmethod
-    def build_flatpak(manifest, build_dir, repo):
+    def build_flatpak(manifest: Manifest, build_dir: str, repo: str):
         Command.execute_command(
             command=[
                 "flatpak-builder",

@@ -27,19 +27,12 @@ logger = setup_logging()
 
 def build_boot_image(
         manifest: Manifest,
-        build_dir: str
+        build_dir: str,
+        repo: str
 ):
     FileUtils.create_directory(build_dir)
     FileUtils.create_directory(build_dir+"/root")
     Shards.install_packages(manifest.packages, build_dir+"/root")
-
-def create_boot_overlay(build_dir: str, base: str):
-    FileUtils.create_directory(build_dir+"/workdir")
-    FileUtils.create_directory(build_dir+"/root")
-
-    DiskUtils.overlay_mount(
-        lowerdirs=[build_dir+"/system"],
-        upperdir=build_dir+"/desktop",
-        workdir=build_dir+"/workdir",
-        destination=build_dir+"/root"
-    )
+    Shards.execute_commands(manifest.commands, build_dir+"/root")
+    Shards.generate_flatpak_manifest(manifest, build_dir)
+    Shards.build_flatpak(manifest, build_dir, repo)
