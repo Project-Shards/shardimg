@@ -28,10 +28,12 @@ logger = setup_logging()
 def build_boot_image(
         manifest: Manifest,
         build_dir: str,
-        repo: str
+        repo: str,
+        manifest_path
 ):
     FileUtils.create_directory(build_dir)
     FileUtils.create_directory(build_dir+"/root")
+    FileUtils.copy_file(manifest_path, build_dir+"/manifest", True)
     Shards.install_packages(manifest.packages, build_dir+"/root")
     Shards.execute_commands(manifest.commands, build_dir+"/root")
     Shards.generate_flatpak_manifest(manifest, build_dir)

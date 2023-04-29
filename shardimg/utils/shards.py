@@ -79,13 +79,24 @@ class Shards:
                             "no-debuginfo": True
                         },
                         "build-commands": [
-                            "cp -a root /app/root"
+                            "cp -a root /app/root",
+                            "cp -a include/* /app/root/",
+                            "install -Dm755 ./manifest /app/root/manifest"
                         ],
                         "sources": [
                             {
                                 "type": "dir",
                                 "path": "./root",
                                 "dest": "root"
+                            },
+                            {
+                                "type": "dir",
+                                "path": "./include",
+                                "dest": "include"
+                            },
+                            {
+                                "type": "file",
+                                "path": "./manifest"
                             }
                         ]
                     }

@@ -111,5 +111,23 @@ class FileUtils:
                 destination,
             ],
             command_description="Copying file "+source+" to "+destination,
-            crash=False,
+            crash=crash,
+        )
+
+    @staticmethod
+    def copy_directory(
+        source: str,
+        destination: str,
+        crash: bool = False,
+    ):
+        logger.info(f"Cofygin directory {source} to {destination}")
+        Command.execute_command(
+            command=[
+                "cp",
+                "-r",
+                source,
+                destination
+            ],
+            command_description="Copying directory "+source+" to "+destination,
+            crash=crash
         )

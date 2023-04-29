@@ -16,6 +16,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
+import os
 from shardimg.classes.manifest import Manifest
 from shardimg.utils.files import FileUtils
 from shardimg.utils.command import Command
@@ -27,9 +28,20 @@ def build_system_image(
         manifest: Manifest,
         build_dir: str,
         repo: str,
+        manifest_path: str
 ):
+    include_dir = os.path.abspath(manifest_path).split("/")
+    include_dir.pop()
+    include_dir.append("include")
+    print(include_dir)
+    include_dir = "/".join(include_dir)
+    #print(include_dir)
+    print(os.path.abspath(manifest_path))
     FileUtils.create_directory(build_dir)
     FileUtils.create_directory(build_dir+"/root")
+    FileUtils.copy_file(manifest_path, build_dir+"/manifest", False)
+    FileUtils.create_directory(build_dir+"/include")
+    FileUtils.copy_directory(include_dir, build_dir, False)
     Shards.install_packages(manifest.packages, build_dir+"/root")
     Shards.generate_flatpak_manifest(manifest, build_dir)
     Shards.build_flatpak(manifest, build_dir, repo)

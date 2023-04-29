@@ -34,22 +34,22 @@ def main(verbose):
 @click.option('--repo', help='Path to the flatpak repository. Can be an empty directory.', default="repo")
 @click.option('--keep', is_flag=True, help='Keep the build directory after the build.', default=False)
 def build(manifest, build_dir, keep, repo):
-    manifest = Manifest(manifest)
-    print("Name "+manifest.name)
-    print("ID "+manifest.id)
-    print("Type "+manifest.type)
-    print("Author "+manifest.author)
-    print("Packages "+str(manifest.packages))
-    print("Base "+manifest.base)
-    print("Commands" +str(manifest.commands))
+    manifest_parsed = Manifest(manifest)
+    print("Name "+manifest_parsed.name)
+    print("ID "+manifest_parsed.id)
+    print("Type "+manifest_parsed.type)
+    print("Author "+manifest_parsed.author)
+    print("Packages "+str(manifest_parsed.packages))
+    print("Base "+manifest_parsed.base)
+    print("Commands" +str(manifest_parsed.commands))
     print("Building")
-    if manifest.id.count(".") < 2:
+    if manifest_parsed.id.count(".") < 2:
         logger.error("Invalid ID. Must contain at least 2 periods")
         sys.exit(1)
-    if manifest.type == "system":
-        build_system_image(manifest, build_dir, repo)
-    elif manifest.type == "boot":
-        build_boot_image(manifest, build_dir, repo)
+    if manifest_parsed.type == "system":
+        build_system_image(manifest_parsed, build_dir, repo, manifest)
+    elif manifest_parsed.type == "boot":
+        build_boot_image(manifest_parsed, build_dir, repo, manifest)
 
 import sys
 if __name__ == '__main__':
