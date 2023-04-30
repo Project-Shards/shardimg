@@ -27,14 +27,31 @@ class Manifest:
     author: str
     packages: list
     commands: list
+    manifest_path: str
 
-    def __init__(self, manifest):
+    def __init__(self,
+        manifest: str = '',
+        name: str = '',
+        id: str = '',
+        version: str = '',
+        type: str = '',
+        base: str = '',
+        author: str = '',
+        packages: list = [],
+        commands: list = [],
+    ):
         self.manifest_path = manifest
-        self.parse_manifest(self.manifest_path)
+        self.name = name
+        self.id = id
+        self.version = version
+        self.type = type
+        self.base = base
+        self.author = author
+        self.packages = packages
+        self.commands = commands
 
-
-    def parse_manifest(self, manifest):
-        with open(manifest) as f:
+    def parse_manifest(self):
+        with open(self.manifest_path) as f:
             data = json.load(f)
         self.name = data["name"]
         self.id = data["id"]
@@ -44,3 +61,19 @@ class Manifest:
         self.author = data["author"]
         self.packages = data["packages"]
         self.commands = data["commands"]
+
+    def write_manifest(self, path):
+        manifest = {
+            "name": self.name,
+            "version": self.version,
+            "author": self.author,
+            "id": self.id,
+            "base": self.base,
+            "type": self.type,
+            "packages": self.packages,
+            "commands": self.commands
+        }
+        with open(path, 'w') as manifest_file:
+            json.dump(manifest, manifest_file, ensure_ascii=False, indent=4)
+
+        

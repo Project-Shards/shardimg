@@ -42,6 +42,8 @@ def build_system_image(
     FileUtils.copy_file(manifest_path, build_dir+"/manifest", False)
     FileUtils.create_directory(build_dir+"/include")
     FileUtils.copy_directory(include_dir, build_dir, False)
+    FileUtils.copy_file(manifest_path, build_dir+"/include/manifest.json", True)
     Shards.install_packages(manifest.packages, build_dir+"/root")
+    Shards.execute_commands(manifest.commands, build_dir+"/root")
     Shards.generate_flatpak_manifest(manifest, build_dir)
     Shards.build_flatpak(manifest, build_dir, repo)

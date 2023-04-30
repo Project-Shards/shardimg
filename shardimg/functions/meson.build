@@ -5,6 +5,7 @@ shardimg_sources = [
     '__init__.py',
     'boot.py',
     'system.py',
+    'init.py'
 ]
 
 install_data(shardimg_sources, install_dir: functionsdir)

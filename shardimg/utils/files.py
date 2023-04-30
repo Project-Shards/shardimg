@@ -120,7 +120,7 @@ class FileUtils:
         destination: str,
         crash: bool = False,
     ):
-        logger.info(f"Cofygin directory {source} to {destination}")
+        logger.info(f"Copying directory {source} to {destination}")
         Command.execute_command(
             command=[
                 "cp",

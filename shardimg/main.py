@@ -16,9 +16,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 import click
+import sys
 from shardimg.classes.manifest import Manifest
 from shardimg.functions.system import *
 from shardimg.functions.boot import *
+from shardimg.functions.init import *
 from shardimg.utils.log import setup_logging
 logger = setup_logging()
 
@@ -34,7 +36,10 @@ def main(verbose):
 @click.option('--repo', help='Path to the flatpak repository. Can be an empty directory.', default="repo")
 @click.option('--keep', is_flag=True, help='Keep the build directory after the build.', default=False)
 def build(manifest, build_dir, keep, repo):
-    manifest_parsed = Manifest(manifest)
+    print(manifest)
+    manifest_parsed = Manifest(manifest=manifest)
+    manifest_parsed.parse_manifest()
+    print(manifest_parsed)
     print("Name "+manifest_parsed.name)
     print("ID "+manifest_parsed.id)
     print("Type "+manifest_parsed.type)
@@ -51,6 +56,24 @@ def build(manifest, build_dir, keep, repo):
     elif manifest_parsed.type == "boot":
         build_boot_image(manifest_parsed, build_dir, repo, manifest)
 
-import sys
+@main.command()
+@click.argument('directory', type=click.Path(exists=False), default=".")
+@click.option('--name', prompt='What name should your image have?', help='The name of the image')
+@click.option('--id', prompt='What is the ID of your image?', help='An image id in the reverse domain name notation')
+@click.option('--version', prompt='Which version is your image?', help='The version of your image', default="1.0")
+@click.option('--author', prompt='Who is the author of this image?', help='Your name/username to show who created the image', default=lambda: os.environ.get("USER", ""), show_default="current user")
+@click.option('--type', type=click.Choice(["boot", "system"], case_sensitive=False), prompt='What type of image do you want to Create?', help='The type of image to create, can be boot and system', default="system")
+@click.option('--base', prompt='What image should be used as the base?', help='The base image to be used, can be empty to create an independent image', default='')
+def init(directory, name, id, version, author, type, base):
+    print(directory)
+    print(name)
+    print(id)
+    print(version)
+    print(author)
+    print(type)
+    print(base)
+    initialize_directory(directory, name, id, version, author, type, base)
+
+
 if __name__ == '__main__':
     sys.exit(main.main())

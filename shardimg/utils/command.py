@@ -28,7 +28,8 @@ class Command:
         command_description: str = "",
         crash: bool = False,
         workdir: str = "",
-        elevated: bool = False
+        elevated: bool = False,
+        capture: bool = False,
     ) -> [str, str, str]:
         if os.environ.get("DEBUG"):
             logger.debug("Command: " + " ".join(command))
@@ -36,12 +37,12 @@ class Command:
                 return [0, "", ""]
 
         rootcommand = ["sudo"] + command
-        print(rootcommand)
-        print(command)
-        print(elevated)
+        #print(rootcommand)
+        #print(command)
+        #print(elevated)
         out = subprocess.run(
             rootcommand if elevated else command,
-            #shell=True,
+            capture_output=capture,
             cwd=workdir if workdir.strip() != "" else None
         )
         if out.returncode != 0 and command_description.strip() != "":

@@ -17,6 +17,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import yaml
+import os
 from shardimg.utils.command import Command
 from shardimg.utils.files import FileUtils
 from shardimg.classes.manifest import Manifest
@@ -39,11 +40,29 @@ class Shards:
                         root + "/var/lib/pacman",
                         "--config",
                         root + "/pacman.conf",
-                        "-Syu",
                         "--needed",
+                        "-Syu",
                     ] + packages,
             command_description="Installing packages",
             crash=True,
+            elevated=False
+        )
+        Command.execute_command(
+            command=[
+                        "fakechroot",
+                        "fakeroot",
+                        "pacman",
+                        "--noconfirm",
+                        "--root",
+                        root,
+                        "--dbpath",
+                        root + "/var/lib/pacman",
+                        "--config",
+                        root + "/pacman.conf",
+                        "-Scc"
+            ],
+            command_description="Clearing pacman cache",
+            crash=False,
             elevated=False
         )
 
@@ -56,6 +75,8 @@ class Shards:
                     "fakeroot",
                     "chroot",
                     root,
+                    "bash",
+                    "-c",
                     command,
                 ],
                 command_description="Run command "+command+" in chroot",
@@ -80,8 +101,7 @@ class Shards:
                         },
                         "build-commands": [
                             "cp -a root /app/root",
-                            "cp -a include/* /app/root/",
-                            "install -Dm755 ./manifest /app/root/manifest"
+                            "cp -a include/* /app/root/"
                         ],
                         "sources": [
                             {
@@ -94,10 +114,6 @@ class Shards:
                                 "path": "./include",
                                 "dest": "include"
                             },
-                            {
-                                "type": "file",
-                                "path": "./manifest"
-                            }
                         ]
                     }
                 ]
@@ -117,3 +133,4 @@ class Shards:
             crash=True,
             elevated=False
         )
+

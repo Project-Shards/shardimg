@@ -22,7 +22,7 @@ from shardimg.utils.command import Command
 from shardimg.utils.disks import DiskUtils
 from shardimg.utils.log import setup_logging
 from shardimg.utils.shards import Shards
-import random, string
+import random, string, os
 logger = setup_logging()
 
 def build_boot_image(
@@ -31,9 +31,18 @@ def build_boot_image(
         repo: str,
         manifest_path
 ):
+    include_dir = os.path.abspath(manifest_path).split("/")
+    include_dir.pop()
+    include_dir.append("include")
+    print(include_dir)
+    include_dir = "/".join(include_dir)
+    #print(include_dir)
+    print(os.path.abspath(manifest_path))
     FileUtils.create_directory(build_dir)
     FileUtils.create_directory(build_dir+"/root")
-    FileUtils.copy_file(manifest_path, build_dir+"/manifest", True)
+    FileUtils.create_directory(build_dir+"/include")
+    FileUtils.copy_directory(include_dir, build_dir, False)
+    FileUtils.copy_file(manifest_path, build_dir+"/include/manifest.json", True)
     Shards.install_packages(manifest.packages, build_dir+"/root")
     Shards.execute_commands(manifest.commands, build_dir+"/root")
     Shards.generate_flatpak_manifest(manifest, build_dir)
