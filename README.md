@@ -12,7 +12,7 @@ Easily build project shards images
 ![GitHub forks](https://img.shields.io/github/forks/project-shards/shardimg?color=dark-green)
 ![GitHub issues](https://img.shields.io/github/issues/project-shards/shardimg?color=dark-green)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/project-shards/shardimg?color=dark-green)
-
+<!--
 ## 📘 Documentation
 
 [Documentation](https://linktodocumentation)
@@ -21,20 +21,20 @@ Easily build project shards images
 ## 🖼️ Screenshots
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
+-->
 
 ## 🐣 Features
 
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
+- Initialize a new image directory and populate manifest with basic information
+- Build images and commit them to a custom repository
+- Base images on already existing images (not implemented yet)
 
 ## 🫂 Support
 
 For support, join our [Discord server](https://discord.gg/u9McaXUq2t)
 or create an issue!
 
+<!--
 ## 📚 FAQ
 
 #### Question 1
@@ -44,63 +44,28 @@ Answer 1
 #### Question 2
 
 Answer 2
-
+-->
 
 ## 🖥️ Installation
 
-Install my-project with npm
+Install shardimg with meson & ninja
 
 ```bash
-  npm install my-project
-  cd my-project
+  meson setup _build
+  ninja -C _build install
 ```
-    
-## ⏫️ Deployment
-
-To deploy this project run
-
-```bash
-  npm run deploy
-```
-
-
-## 📲 Run Locally
-
-Clone the project
-
-```bash
-  git clone https://link-to-project
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start
-```
-
 
 ## 🙋 Usage/Examples
 
-```javascript
-import Component from 'my-project'
-
-function App() {
-  return <Component />
-}
+### Initialize a new image
+```bash
+shardimg init myCustomImage
 ```
 
+### Build a new image and use a custom repository
+```bash
+shardimg build --repo /var/repo
+```
 
 ## ✍️ Authors
 
@@ -108,8 +73,6 @@ function App() {
 
 
 ## 📜 License
-
-### Modify the URL
 
 ![GitHub](https://img.shields.io/github/license/project-shards/shardimg)
 
