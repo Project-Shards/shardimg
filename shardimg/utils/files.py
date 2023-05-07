@@ -20,6 +20,7 @@
 from shardimg.utils.command import Command
 from os.path import exists
 import os
+import stat
 from shardimg.utils.log import setup_logging
 logger=setup_logging()
 
@@ -29,6 +30,12 @@ class FileUtils:
     def create_file(
         path: str,
     ):
+        """
+        Creates a file.
+
+        Parameters:
+        path (str): The path of the file to create
+        """
         if os.environ.get("DEBUG"):
             logger.debug(f"Creating file {path}")
             if os.environ.get("SHARDS_FAKE"):
@@ -37,10 +44,41 @@ class FileUtils:
         file.close()
 
     @staticmethod
+    def delete_file(
+        path: str,
+        crash: bool = False
+    ):
+        """
+        Deletes a file.
+
+        Parameters:
+        path  (str) : The path to the file to delete
+        crash (bool): Whether to crash the program if the given file does not exist
+        """
+        if os.environ.get("DEBUG"):
+            logger.debug(f"Deleting file {path}")
+            if os.environ.get("SHARDS_FAKE"):
+                return
+        if os.path.exists(path):
+            os.remove(path)
+        elif crash:
+            logger.error(f"File {path} does not exist!")
+            sys.exit(1)
+        else:
+            logger.warn(f"File {path} does not exist!")
+
+    @staticmethod
     def append_file(
         path: str,
         content: str,
     ):
+        """
+        Appends content to a file. Creates the specified file if it does not exist
+
+        Parameters:
+        path    (str): The path to the file where content should be appended to
+        content (str): The content to append
+        """
         if os.environ.get("DEBUG"):
             logger.debug(f"Appending {content} to file {path}")
             if os.environ.get("SHARDS_FAKE"):
@@ -56,6 +94,14 @@ class FileUtils:
         path: str,
         content: str,
     ):
+        """
+        Overwrites a file with given content.
+        Creates the specified file if it does not exist
+
+        Parameters:
+        path    (str): The path to the file that should be overwritten
+        content (str): The content to write
+        """
         if os.environ.get("DEBUG"):
             logger.debug(f"Writing {content} to file {path}")
             if os.environ.get("SHARDS_FAKE"):
@@ -70,6 +116,13 @@ class FileUtils:
     def create_directory(
         path: str,
     ):
+        """
+        Creates a directory. Does not do anything if the directory already exists.
+        If upper directories in the given path do not exist, they will be created too.
+
+        Parameters:
+        path (str): The path to create
+        """
         if os.environ.get("DEBUG"):
             logger.debug(f"Creating directory {path}")
             if os.environ.get("SHARDS_FAKE"):
@@ -85,6 +138,15 @@ class FileUtils:
         search: str,
         replace: str,
     ):
+        """
+        Searches for a specific string in a file and replaces it with a different
+        given string.
+
+        Parameters:
+        path    (str): The path of the file to work on.
+        search  (str): The string to search for
+        replace (str): The string to replace the search string with.
+        """
         logger.info(f"Replacing {search} with {replace} in file {path}")
         Command.execute_command(
             command=[
@@ -103,6 +165,14 @@ class FileUtils:
         destination: str,
         crash: bool = False,
     ):
+        """
+        Copies a file.
+
+        Parameters:
+        source      (str) : The file source
+        destination (str) : Where the file should be copied to
+        crash       (bool): Whether the program should crash if the copying failed
+        """
         logger.info(f"Copying file {source} to {destination}")
         Command.execute_command(
             command=[
@@ -120,6 +190,14 @@ class FileUtils:
         destination: str,
         crash: bool = False,
     ):
+        """
+        Copies a directory.
+
+        Parameters:
+        source      (str) : The file source
+        destination (str) : Where the file should be copied to
+        crash       (bool): Whether the program should crash if the copying failed
+        """
         logger.info(f"Copying directory {source} to {destination}")
         Command.execute_command(
             command=[
@@ -131,3 +209,32 @@ class FileUtils:
             command_description="Copying directory "+source+" to "+destination,
             crash=crash
         )
+
+    @staticmethod
+    def is_suid(path: str) -> bool:
+        """
+        Checks if a file has the suid bit set.
+
+        Parameters:
+        path (str): The file to check
+        """
+        binary = os.stat(path)
+        if binary.st_mode & stat.S_ISUID == 2048:
+            return True
+        return False
+
+    @staticmethod
+    def get_symlink(path: str) -> str:
+        """
+        Checks if a file is a symlink and returns the path it points to if it is.
+
+        Parameters:
+        path (str): The path to check
+
+        Returns:
+        str: The path the symlink points to. None if the file is not a symlink
+        """
+        if os.path.islink(path):
+            return os.readlink(path)
+        else:
+            return None

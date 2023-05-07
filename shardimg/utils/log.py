@@ -3,7 +3,12 @@ import logging.config
 import yaml
 
 def setup_logging():
+    """
+    Sets up logging.
 
+    Returns:
+    logger: the logger object that can be used to output log messages
+    """
     logging_config = """
 version: 1
 

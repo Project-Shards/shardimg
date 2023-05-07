@@ -31,6 +31,20 @@ class Command:
         elevated: bool = False,
         capture: bool = False,
     ) -> [str, str, str]:
+        """
+        Executes a given command and optionally captures the output.
+
+        Parameters:
+        command             (list): The command to run, each parameter is a seperate object in the list
+        command_description (str) : A description of what the command does (optional)
+        crash               (bool): Whether the system should crash if the command fails. Defaults to False if not specified
+        workdir             (str) : In what directory the command should run. Runs in the current cwd if not specified
+        elevated            (bool): Whether the command should be run as the root user. Defaults to False if not specified
+        capture             (bool): Whether the command output should be captured. Defaults to False if not specified.
+
+        Returns:
+        [str, str, str]: A list containing the returncode, stdout and stderr
+        """
         if os.environ.get("DEBUG"):
             logger.debug("Command: " + " ".join(command))
             if os.environ.get("SHARDS_FAKE"):
@@ -63,6 +77,18 @@ class Command:
             crash: bool = False,
             root: str = "/mnt"
     ) -> [str, str, str]:
+        """
+        Executes a given command in a chroot.
+
+        Parameters:
+        command             (list): The command to run, each parameter is a seperate object in the list
+        command_description (str) : A description of what the command does (optional)
+        crash               (bool): Whether the system should crash if the command fails. Defaults to False if not specified
+        root                (str) : The root that chroot should switch to.
+
+        Returns:
+        [str, str, str]: A list containing the returncode, stdout and stderr
+        """
         chroot_command = ["arch-chroot", root]
         chroot_command.extend(command)
         return Command.execute_command(

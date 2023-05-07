@@ -26,6 +26,13 @@ from shardimg.classes.manifest import Manifest
 class Shards:
     @staticmethod
     def install_packages(packages: list, root: str):
+        """
+        Installs packages into a given root.
+
+        Parameters:
+        packages (list): The list of packages to install
+        root     (str) : Path to the root where packages are going to be installed into
+        """
         FileUtils.create_directory(root + "/var/lib/pacman")
         FileUtils.copy_file(source="/etc/pacman.conf", destination=root + "/pacman.conf", crash=True)
         Command.execute_command(
@@ -67,7 +74,14 @@ class Shards:
         )
 
     @staticmethod
-    def execute_commands(commands: list, root):
+    def execute_commands(commands: list, root: str):
+        """
+        Executes Commands in a given root.
+
+        Parameters:
+        commands (list): The commands to run
+        root     (str) : Path to the root to run the commands in
+        """
         for command in commands:
             Command.execute_command(
                 command=[
@@ -85,6 +99,13 @@ class Shards:
 
     @staticmethod
     def generate_flatpak_manifest(manifest: Manifest, build_dir: str):
+        """
+        Generates the flatpak manifest used to build a shards image.
+
+        Parameters:
+        manifest  (Manifest): The parsed Manifest with all values in it
+        build_dir (str)     : The build directory of the current build
+        """
         with open(build_dir + "/" + manifest.name + ".yml", "w") as f:
             yaml.dump({
                 "app-id": manifest.id,
@@ -121,6 +142,14 @@ class Shards:
 
     @staticmethod
     def build_flatpak(manifest: Manifest, build_dir: str, repo: str):
+        """
+        Builds a flatpak using a previously generated manifest.
+
+        Parameters:
+        manifest  (Manifest): The parsed Manifest with all values in it
+        build_dir (str)     : The build directory of the current build
+        repo      (str)     : Path to the repository where the build gets commited to
+        """
         Command.execute_command(
             command=[
                 "flatpak-builder",
@@ -134,3 +163,4 @@ class Shards:
             elevated=False
         )
 
+    
