@@ -18,7 +18,7 @@
 import click
 import sys
 from shardimg.classes.manifest import Manifest
-from shardimg.functions.system import *
+from shardimg.functions.system import SystemImage
 from shardimg.functions.boot import *
 from shardimg.functions.init import *
 from shardimg.utils.log import setup_logging
@@ -52,10 +52,9 @@ def build(manifest, build_dir, keep, repo):
         logger.error("Invalid ID. Must contain at least 2 periods")
         sys.exit(1)
     if manifest_parsed.type == "system":
-        build_system_image(manifest_parsed, build_dir, repo, manifest)
+        SystemImage.build_system_image(manifest_parsed, build_dir, repo, manifest)
     elif manifest_parsed.type == "boot":
         build_boot_image(manifest_parsed, build_dir, repo, manifest)
-
 @main.command()
 @click.argument('directory', type=click.Path(exists=False), default=".")
 @click.option('--name', prompt='What name should your image have?', help='The name of the image')

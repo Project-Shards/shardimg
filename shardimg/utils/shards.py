@@ -24,6 +24,49 @@ from shardimg.classes.manifest import Manifest
 
 
 class Shards:
+
+    @staticmethod
+    def initialize_base_image(
+        base: str,
+        build_dir: str
+    ):
+        """
+        Fetches the base image and populates the build directory accordingly.
+
+        Parameters:
+        base      (str): ID of the base image
+        build_dir (str): Path to the build directory
+        """
+
+        Command.execute_command(
+            command=[
+                "flatpak",
+                "install",
+                "--assumeyes",
+                base
+            ],
+            command_description=f"Fetching base image {base}",
+            crash=True,
+            elevated=False
+        )
+        location=Command.execute_command(
+            command=[
+                "flatpak",
+                "info",
+                "-l",
+                base
+            ],
+            command_description=f"Getting installation path for {base}",
+            crash=True,
+            elevated=False,
+            capture=True
+        )
+        location=location[1].decode("UTF-8").strip()
+        FileUtils.create_directory(build_dir)
+        FileUtils.copy_directory(location+"/files/root", build_dir+"/root", True)
+
+
+
     @staticmethod
     def install_packages(packages: list, root: str):
         """
