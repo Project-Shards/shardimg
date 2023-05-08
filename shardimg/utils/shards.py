@@ -121,8 +121,8 @@ class Shards:
                             "no-debuginfo": True
                         },
                         "build-commands": [
-                            "cp -a root /app/root",
-                            "cp -a include/* /app/root/"
+                            "cp -aRp root /app/root",
+                            "cp -aRp include/* /app/root/"
                         ],
                         "sources": [
                             {
