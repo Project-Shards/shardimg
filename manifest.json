@@ -9,5 +9,8 @@
   ],
   "commands": [
     "echo hello"
-  ]
+  ],
+  "fsguard_enabled": true,
+  "fsguard_binary": "/usr/bin/FsGuard",
+  "fsguard_paths": "/usr"
 }

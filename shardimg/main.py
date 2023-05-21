@@ -47,12 +47,22 @@ def build(manifest, build_dir, keep, repo):
     print("Packages "+str(manifest_parsed.packages))
     print("Base "+manifest_parsed.base)
     print("Commands" +str(manifest_parsed.commands))
+    print("FsGuard enabled "+str(manifest_parsed.fsguard_enabled))
+    print("FsGuard binary "+manifest_parsed.fsguard_binary)
+    print("FsGuard paths "+manifest_parsed.fsguard_paths)
     print("Building")
     if manifest_parsed.id.count(".") < 2:
         logger.error("Invalid ID. Must contain at least 2 periods")
         sys.exit(1)
     if manifest_parsed.type == "system":
-        SystemImage.build_system_image(manifest_parsed, build_dir, repo, manifest)
+        SystemImage.build_system_image(manifest=manifest_parsed,
+                                       build_dir=build_dir,
+                                       repo=repo,
+                                       manifest_path=manifest,
+                                       fsguard_enabled=manifest_parsed.fsguard_enabled,
+                                       fsguard_binary=manifest_parsed.fsguard_binary,
+                                       fsguard_paths=manifest_parsed.fsguard_paths
+                                       )
     elif manifest_parsed.type == "boot":
         build_boot_image(manifest_parsed, build_dir, repo, manifest)
 @main.command()

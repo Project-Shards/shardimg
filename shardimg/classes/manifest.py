@@ -27,6 +27,9 @@ class Manifest:
     author: str
     packages: list
     commands: list
+    fsguard_enabled: bool
+    fsguard_binary: str
+    fsguard_paths: list
     manifest_path: str
 
     def __init__(self,
@@ -39,6 +42,9 @@ class Manifest:
         author: str = '',
         packages: list = [],
         commands: list = [],
+        fsguard_enabled: bool = True,
+        fsguard_binary: str = '',
+        fsguard_paths: list = []
     ):
         self.manifest_path = manifest
         self.name = name
@@ -49,6 +55,9 @@ class Manifest:
         self.author = author
         self.packages = packages
         self.commands = commands
+        self.fsguard_enabled = fsguard_enabled
+        self.fsguard_binary = fsguard_binary
+        self.fsguard_paths = fsguard_paths
 
     def parse_manifest(self):
         with open(self.manifest_path) as f:
@@ -61,6 +70,9 @@ class Manifest:
         self.author = data["author"]
         self.packages = data["packages"]
         self.commands = data["commands"]
+        self.fsguard_enabled = data["fsguard_enabled"]
+        self.fsguard_binary = data["fsguard_binary"]
+        self.fsguard_paths = data["fsguard_paths"]
 
     def write_manifest(self, path):
         manifest = {
@@ -71,7 +83,10 @@ class Manifest:
             "base": self.base,
             "type": self.type,
             "packages": self.packages,
-            "commands": self.commands
+            "commands": self.commands,
+            "fsguard_enabled": self.fsguard_enabled,
+            "fsguard_binary": self.fsguard_binary,
+            "fsguard_paths": self.fsguard_paths
         }
         with open(path, 'w') as manifest_file:
             json.dump(manifest, manifest_file, ensure_ascii=False, indent=4)

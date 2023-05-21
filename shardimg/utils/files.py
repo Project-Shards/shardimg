@@ -15,11 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-only
-
+import sys
 
 from shardimg.utils.command import Command
 from os.path import exists
 import os
+import shutil
 import stat
 from shardimg.utils.log import setup_logging
 logger=setup_logging()
@@ -61,6 +62,30 @@ class FileUtils:
                 return
         if os.path.exists(path):
             os.remove(path)
+        elif crash:
+            logger.error(f"File {path} does not exist!")
+            sys.exit(1)
+        else:
+            logger.warn(f"File {path} does not exist!")
+
+    @staticmethod
+    def delete_directory(
+            path: str,
+            crash: bool = False
+    ):
+        """
+        Recursively deletes a directory.
+
+        Parameters:
+        path  (str) : The path to the file to delete
+        crash (bool): Whether to crash the program if the given file does not exist
+        """
+        if os.environ.get("DEBUG"):
+            logger.debug(f"Deleting file {path}")
+            if os.environ.get("SHARDS_FAKE"):
+                return
+        if os.path.exists(path):
+            shutil.rmtree(path)
         elif crash:
             logger.error(f"File {path} does not exist!")
             sys.exit(1)

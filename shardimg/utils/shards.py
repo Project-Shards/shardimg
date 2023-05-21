@@ -17,7 +17,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import yaml
-import os
+import hashlib
 from shardimg.utils.command import Command
 from shardimg.utils.files import FileUtils
 from shardimg.classes.manifest import Manifest
@@ -206,4 +206,11 @@ class Shards:
             elevated=False
         )
 
+    @staticmethod
+    def fsguard_checksum(file):
+        sha1 = hashlib.sha1()
+        with open(file, 'rb') as f:
+            data = f.read()
+            sha1.update(data)
+        return sha1.hexdigest()
     
