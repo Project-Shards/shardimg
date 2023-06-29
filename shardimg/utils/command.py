@@ -51,9 +51,6 @@ class Command:
                 return [0, "", ""]
 
         rootcommand = ["sudo"] + command
-        #print(rootcommand)
-        #print(command)
-        #print(elevated)
         out = subprocess.run(
             rootcommand if elevated else command,
             capture_output=capture,

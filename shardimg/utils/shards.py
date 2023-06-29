@@ -16,7 +16,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
+import os
 import yaml
+import json
 import hashlib
 from shardimg.utils.command import Command
 from shardimg.utils.files import FileUtils
@@ -149,14 +151,15 @@ class Shards:
         manifest  (Manifest): The parsed Manifest with all values in it
         build_dir (str)     : The build directory of the current build
         """
-        with open(build_dir + "/" + manifest.name + ".yml", "w") as f:
-            yaml.dump({
-                "app-id": manifest.id,
-                "runtime": "org.freedesktop.Platform",
-                "runtime-version": "22.08",
-                "sdk": "org.freedesktop.Sdk",
-                "modules": [
-                    {
+
+        modules = []
+
+        for file in os.listdir(build_dir + "/modules"):
+            if not ".yml" in file or ".json" in file:
+                continue
+            modules.append(os.path.abspath(build_dir+"/modules/" + file))
+
+        modules.append({
                         "name": "root",
                         "buildsystem": "simple",
                         "build-options": {
@@ -179,9 +182,17 @@ class Shards:
                                 "dest": "include"
                             },
                         ]
-                    }
-                ]
-            }, f)
+                    })
+
+        with open(build_dir + "/" + manifest.name + ".yml", "w") as f:
+            flatpak_manifest=json.dumps({
+                "app-id": manifest.id,
+                "runtime": "org.freedesktop.Platform",
+                "runtime-version": "22.08",
+                "sdk": "org.freedesktop.Sdk",
+                "modules": modules
+            })
+            f.write(flatpak_manifest)
 
     @staticmethod
     def build_flatpak(manifest: Manifest, build_dir: str, repo: str):

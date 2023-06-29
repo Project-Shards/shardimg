@@ -59,7 +59,12 @@ class SystemImage:
         include_dir.append("include")
         include_dir = "/".join(include_dir)
 
-        if manifest.base.strip() is not "":
+        modules_dir = os.path.abspath(manifest_path).split("/")
+        modules_dir.pop()
+        modules_dir.append("modules")
+        modules_dir = "/".join(modules_dir)
+
+        if manifest.base.strip() != "":
             logger.info(f"Pulling base image")
             Shards.initialize_base_image(
                 base=manifest.base,
@@ -78,6 +83,9 @@ class SystemImage:
         FileUtils.create_directory(build_dir + "/include")
         FileUtils.copy_directory(include_dir, build_dir, False)
         FileUtils.copy_file(manifest_path, build_dir + "/include/manifest.json", True)
+
+        FileUtils.create_directory(build_dir + "/modules")
+        FileUtils.copy_directory(modules_dir, build_dir, False)
 
         logger.info(f"Mount proc, sys and dev in {build_dir}/root")
         DiskUtils.mount(source="/proc", mountpoint=build_dir + "/root/proc", fs="proc")
@@ -150,7 +158,7 @@ class SystemImage:
         FileUtils.write_file(path=build_dir + "/include/FsGuard/filelist", content="\n".join(suid_binaries))
 
         if not os.path.exists(os.getenv("HOME")+"/.minisign/minisign.pub"):
-            logger.error(f"Minisign public key not found! {os.getenv('HOME')}+/.minisign/minisign.pub: No such file "
+            logger.error(f"Minisign public key not found! {os.getenv('HOME')}/.minisign/minisign.pub: No such file "
                          f"or directory")
             sys.exit(1)
 
@@ -158,7 +166,7 @@ class SystemImage:
             command=[
                 "bash",
                 "-c",
-                "echo | minisign -Sm"+build_dir+"/include/FsGuard/filelist -x"+build_dir+"/filelist.minisig"
+                "echo | minisign -Sm"+build_dir+"/include/FsGuard/filelist -x "+build_dir+"/filelist.minisig"
             ],
             crash=True
         )

@@ -49,7 +49,7 @@ def build(manifest, build_dir, keep, repo):
     print("Commands" +str(manifest_parsed.commands))
     print("FsGuard enabled "+str(manifest_parsed.fsguard_enabled))
     print("FsGuard binary "+manifest_parsed.fsguard_binary)
-    print("FsGuard paths "+manifest_parsed.fsguard_paths)
+    print("FsGuard paths "+" ".join(manifest_parsed.fsguard_paths))
     print("Building")
     if manifest_parsed.id.count(".") < 2:
         logger.error("Invalid ID. Must contain at least 2 periods")
