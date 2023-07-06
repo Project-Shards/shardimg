@@ -4,6 +4,7 @@ classesdir = join_paths(pkgdatadir, 'shardimg/classes')
 shardimg_sources = [
     '__init__.py',
     'manifest.py',
+    'bootmanifest.py',
 ]
 
 install_data(shardimg_sources, install_dir: classesdir)

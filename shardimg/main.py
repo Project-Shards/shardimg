@@ -18,6 +18,7 @@
 import click
 import sys
 from shardimg.classes.manifest import Manifest
+from shardimg.classes.bootmanifest import BootManifest
 from shardimg.functions.system import SystemImage
 from shardimg.functions.boot import *
 from shardimg.functions.init import *
@@ -37,24 +38,29 @@ def main(verbose):
 @click.option('--keep', is_flag=True, help='Keep the build directory after the build.', default=False)
 def build(manifest, build_dir, keep, repo):
     print(manifest)
-    manifest_parsed = Manifest(manifest=manifest)
-    manifest_parsed.parse_manifest()
+    try:
+        manifest_parsed = Manifest(manifest=manifest)
+        manifest_parsed.parse_manifest()
+    except KeyError:
+        manifest_parsed = BootManifest(manifest=manifest)
+        manifest_parsed.parse_manifest()
+
     print(manifest_parsed)
     print("Name "+manifest_parsed.name)
     print("ID "+manifest_parsed.id)
     print("Type "+manifest_parsed.type)
     print("Author "+manifest_parsed.author)
-    print("Packages "+str(manifest_parsed.packages))
-    print("Base "+manifest_parsed.base)
-    print("Commands" +str(manifest_parsed.commands))
-    print("FsGuard enabled "+str(manifest_parsed.fsguard_enabled))
-    print("FsGuard binary "+manifest_parsed.fsguard_binary)
-    print("FsGuard paths "+" ".join(manifest_parsed.fsguard_paths))
-    print("Building")
     if manifest_parsed.id.count(".") < 2:
         logger.error("Invalid ID. Must contain at least 2 periods")
         sys.exit(1)
     if manifest_parsed.type == "system":
+        print("Packages "+str(manifest_parsed.packages))
+        print("Base "+manifest_parsed.base)
+        print("Commands" +str(manifest_parsed.commands))
+        print("FsGuard enabled "+str(manifest_parsed.fsguard_enabled))
+        print("FsGuard binary "+manifest_parsed.fsguard_binary)
+        print("FsGuard paths "+" ".join(manifest_parsed.fsguard_paths))
+        print("Building System Image")
         SystemImage.build_system_image(manifest=manifest_parsed,
                                        build_dir=build_dir,
                                        repo=repo,
@@ -64,7 +70,13 @@ def build(manifest, build_dir, keep, repo):
                                        fsguard_paths=manifest_parsed.fsguard_paths
                                        )
     elif manifest_parsed.type == "boot":
+        print("Kernel Name "+manifest_parsed.kernelname)
+        print("Kernel Package "+manifest_parsed.kernelpackage)
+        print("Kernel Args "+manifest_parsed.kernelargs)
+        print("Commands "+str(manifest_parsed.commands))
         build_boot_image(manifest_parsed, build_dir, repo, manifest)
+
+
 @main.command()
 @click.argument('directory', type=click.Path(exists=False), default=".")
 @click.option('--name', prompt='What name should your image have?', help='The name of the image')

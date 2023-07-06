@@ -130,8 +130,7 @@ class Shards:
         for command in commands:
             Command.execute_command(
                 command=[
-                    "fakechroot",
-                    "fakeroot",
+
                     "chroot",
                     root,
                     "bash",
@@ -139,7 +138,8 @@ class Shards:
                     command,
                 ],
                 command_description="Run command "+command+" in chroot",
-                crash=True
+                crash=True,
+                elevated=True
             )
 
     @staticmethod
@@ -154,10 +154,11 @@ class Shards:
 
         modules = []
 
-        for file in os.listdir(build_dir + "/modules"):
-            if not ".yml" in file or ".json" in file:
-                continue
-            modules.append(os.path.abspath(build_dir+"/modules/" + file))
+        if os.path.exists(build_dir+"/modules"):
+            for file in os.listdir(build_dir + "/modules"):
+                if not ".yml" in file or ".json" in file:
+                    continue
+                modules.append(os.path.abspath(build_dir+"/modules/" + file))
 
         modules.append({
                         "name": "root",

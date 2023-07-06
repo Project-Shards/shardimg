@@ -31,19 +31,48 @@ def build_boot_image(
         repo: str,
         manifest_path
 ):
-    include_dir = os.path.abspath(manifest_path).split("/")
-    include_dir.pop()
-    include_dir.append("include")
-    print(include_dir)
-    include_dir = "/".join(include_dir)
-    #print(include_dir)
     print(os.path.abspath(manifest_path))
     FileUtils.create_directory(build_dir)
+    FileUtils.create_directory(build_dir+"/buildroot")
+    FileUtils.create_directory(build_dir + "/buildroot/proc")
+    FileUtils.create_directory(build_dir + "/buildroot/sys")
+    FileUtils.create_directory(build_dir + "/buildroot/dev")
     FileUtils.create_directory(build_dir+"/root")
     FileUtils.create_directory(build_dir+"/include")
-    FileUtils.copy_directory(include_dir, build_dir, False)
+
     FileUtils.copy_file(manifest_path, build_dir+"/include/manifest.json", True)
-    Shards.install_packages(manifest.packages, build_dir+"/root")
-    Shards.execute_commands(manifest.commands, build_dir+"/root")
+
+    logger.info(f"Mount proc, sys and dev in {build_dir}/buildroot")
+    DiskUtils.mount(source="/proc", mountpoint=build_dir + "/buildroot/proc", fs="proc")
+    DiskUtils.mount(source="/sys", mountpoint=build_dir + "/buildroot/sys", fs="sysfs")
+    DiskUtils.mount(source="/dev", mountpoint=build_dir + "/buildroot/dev", options=["bind"])
+
+    packages=["base", "dracut", "btrfs-progs", "busybox", "lvm2", "dmraid", "mdadm", "tpm2-tss", "dash", "binutils", "elfutils", manifest.kernelpackage, "linux-firmware"]
+
+    Shards.install_packages(packages, build_dir+"/buildroot")
+    Shards.execute_commands(manifest.commands, build_dir+"/buildroot")
+
+    Shards.execute_commands([f'dracut --no-hostonly-cmdline --no-hostonly --uefi --kver {manifest.kernelversion} /{manifest.kernelname}.unsigned.efi'], build_dir+"/buildroot")
+
+    Command.execute_command(
+        command=[
+            "chown",
+            os.getenv("USER"),
+            f"{build_dir}/buildroot/{manifest.kernelname}.unsigned.efi",
+        ],
+        command_description="Correct permissions for kernel efi",
+        crash=True,
+        elevated=True
+    )
+
+    FileUtils.copy_file(build_dir+f"/buildroot/{manifest.kernelname}.unsigned.efi", build_dir+f"/root/{manifest.kernelname}.unsigned.efi")
+
+    logger.info("Unmounting proc, sys and dev")
+    DiskUtils.unmount(mountpoint=build_dir + "/buildroot/proc")
+    DiskUtils.unmount(mountpoint=build_dir + "/buildroot/sys")
+    DiskUtils.unmount(mountpoint=build_dir + "/buildroot/dev")
+
     Shards.generate_flatpak_manifest(manifest, build_dir)
     Shards.build_flatpak(manifest, build_dir, repo)
+
+    

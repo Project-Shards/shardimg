@@ -1,0 +1,11 @@
+{
+  "name": "Boot",
+  "version": "0.1.0",
+  "type": "boot",
+  "author": "axtlos (axtlos@getcryst.al)",
+  "kernelname": "linux",
+  "kernelversion": "6.4.1-arch2-1",
+  "kernelpackage": "linux",
+  "kernelargs": "loglevel=5",
+  "commands": []
+}
